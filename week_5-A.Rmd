@@ -13,6 +13,13 @@ library(tidyverse)
 
 **Prompt:** Create a graphic of the posterior distribution of the [538 forecast](https://projects.fivethirtyeight.com/2020-election-forecast/) for Biden's electoral vote total. Recall the example given in Chapter 5 of *The Primer*.
 
+```{r}
+data <- read_csv("https://projects.fivethirtyeight.com/2020-general-data/presidential_ev_probabilities_2020.csv") 
+
+ggplot(data, aes(x = total_ev, y = evprob_chal)) +
+  geom_col(color = "dodgerblue") +
+  labs(x = "Total Electoral Votes", y = "Biden's Electorla Vote Probability")
+```
 
 
 ### Scene 2
@@ -26,18 +33,54 @@ b) Assume that Biden implements the campaign, create the actual Preceptor Table 
 c) What does the actual Preceptor Table look like now?
 
 
+```{r}
+# The actual preceptor table has many more question marks because we cannot 
+# observe multiple outcomes/treatments. 
+```
 
 
 ### Scene 3
 
 **Prompt:** Probability distributions are confusing. Using 538's posterior probability distribution of Biden's electoral votes, answer the following question. (Recall that there are 538 total electoral votes. For this exercise, you may assume that every EV goes to either Biden or Trump. In other words, we are, by assumption, eliminating the possibility of a third party candidate winning any votes.)
 
-
 a) What is the probability that Biden wins more than 300 electoral votes?
+```{r}
+above300 <- data %>%
+  select(total_ev, evprob_chal) %>%
+  filter(total_ev >300) %>%
+  summarize(sumprob = sum(evprob_chal))
+
+above300 
+
+# Around 70%
+  
+```
+
 
 b) What is the probability that Biden wins exactly 531 electoral votes? Is this answer consistent with your answer in a)?
+```{r}
+exactly531 <- data %>%
+  select(total_ev, evprob_chal) %>%
+  filter(total_ev == 531) %>%
+  pull(evprob_chal)
+
+exactly531 
+
+# Basically 0, rare to get this exact number, as numbers get larger
+# becomes less and less likely
+```
 
 c) What is the probability of a "very close" election, defined as Biden winning between 269 and 289 electoral votes, inclusive?
+```{r}
+veryclose <- data %>%
+  select(total_ev, evprob_chal) %>%
+  filter(total_ev >= 269 & total_ev <= 289) %>%
+  summarize(sumprob = sum(evprob_chal))
+
+veryclose
+
+# Probability of a very close election is roughly 8%
+```
 
 d) How many unique electoral vote totals does 538 view as impossible for Biden to achieve? Some of these are truly impossible. Given an example of one of these. Why does 538 think that some vote totals, while theoretically possible, should be given zero probability in its posterior?
 
